@@ -24,6 +24,8 @@ fn main() {
     let url = &args[1];
     let url = url::Url::parse(url).expect("error parsing url");
     let opts = ConnectionOptions {
+        hostname: Some("rabbitmq-server".to_string()),
+        authorization: None,
         username: url.username.map(|s| s.to_string()),
         password: url.password.map(|s| s.to_string()),
         sasl_mechanism: url.username.map_or(Some(SaslMechanism::Anonymous), |_| {

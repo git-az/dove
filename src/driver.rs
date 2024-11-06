@@ -245,6 +245,7 @@ impl ConnectionDriver {
                                     let mut f = s.flow_control.lock().unwrap();
                                     f.remote_outgoing_window = begin.outgoing_window;
                                     f.remote_incoming_window = begin.incoming_window;
+                                    f.next_incoming_id = begin.next_outgoing_id;// alex
                                     if let Some(remote_channel) = begin.remote_channel {
                                         let mut cm = self.remote_channel_map.lock().unwrap();
                                         cm.insert(channel, remote_channel);

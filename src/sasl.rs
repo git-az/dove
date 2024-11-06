@@ -26,6 +26,7 @@ pub enum SaslRole {
 #[derive(Debug)]
 pub struct SaslClient {
     pub mechanism: SaslMechanism,
+    pub authorization: Option<String>,
     pub username: Option<String>,
     pub password: Option<String>,
 }
@@ -124,13 +125,18 @@ impl Sasl {
                             self.state = SaslState::Failed;
                         } else if SaslMechanism::Plain == sasl_client.mechanism {
                             let mut data = Vec::new();
-                            data.extend_from_slice(
-                                sasl_client
-                                    .username
-                                    .as_deref()
-                                    .unwrap_or_default()
-                                    .as_bytes(),
-                            );
+
+                            // rfc4616: 2. PLAIN SASL Mechanism
+                            // message = [authzid] UTF8NUL authcid UTF8NUL passwd
+                            if sasl_client.authorization != None {
+                                data.extend_from_slice(
+                                    sasl_client
+                                        .authorization
+                                        .as_deref()
+                                        .unwrap_or_default()
+                                        .as_bytes(),
+                                );
+                            }
                             data.push(0);
                             data.extend_from_slice(
                                 sasl_client

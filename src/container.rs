@@ -269,6 +269,7 @@ impl ContainerInner {
             driver.open({
                 let mut open = Open::new(&self.container_id);
                 // open.hostname = Some(host.to_string());
+                open.hostname = options.hostname;
                 open.channel_max = Some(u16::MAX);
                 open.idle_timeout = options.idle_timeout.map(|d| d.as_millis() as _);
                 open

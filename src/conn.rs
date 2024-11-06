@@ -18,6 +18,8 @@ use std::vec::Vec;
 
 #[derive(Debug, Default, Clone)]
 pub struct ConnectionOptions {
+    pub hostname: Option<String>,
+    pub authorization: Option<String>,
     pub username: Option<String>,
     pub password: Option<String>,
     pub sasl_mechanism: Option<SaslMechanism>,
@@ -29,6 +31,8 @@ pub struct ConnectionOptions {
 impl ConnectionOptions {
     pub const fn new() -> ConnectionOptions {
         ConnectionOptions {
+            hostname: None,
+            authorization: None,
             username: None,
             password: None,
             sasl_mechanism: None,
@@ -40,6 +44,8 @@ impl ConnectionOptions {
 
     pub const fn anonymous() -> Self {
         Self {
+            hostname: None,
+            authorization: None,
             username: None,
             password: None,
             sasl_mechanism: Some(SaslMechanism::Anonymous),
@@ -51,6 +57,8 @@ impl ConnectionOptions {
 
     pub const fn plain(username: String, password: String) -> Self {
         Self {
+            hostname: None,
+            authorization: None,
             username: Some(username),
             password: Some(password),
             sasl_mechanism: Some(SaslMechanism::Plain),
@@ -62,6 +70,11 @@ impl ConnectionOptions {
 
     pub fn sasl_mechanism(mut self, mechanism: SaslMechanism) -> Self {
         self.sasl_mechanism = Some(mechanism);
+        self
+    }
+
+    pub fn authorization(mut self, authorization: &str) -> Self {
+        self.authorization = Some(authorization.to_string());
         self
     }
 
@@ -135,6 +148,7 @@ pub fn connect<N: Network>(
         connection.sasl = Some(Sasl {
             role: SaslRole::Client(SaslClient {
                 mechanism: opts.sasl_mechanism.unwrap_or(SaslMechanism::Plain),
+                authorization: opts.authorization,
                 username: opts.username,
                 password: opts.password,
             }),
