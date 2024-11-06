@@ -24,8 +24,6 @@ fn main() {
     let url = &args[1];
     let url = url::Url::parse(url).expect("error parsing url");
     let opts = ConnectionOptions {
-        hostname: Some("rabbitmq-server".to_string()),
-        authorization: None,
         username: url.username.map(|s| s.to_string()),
         password: url.password.map(|s| s.to_string()),
         sasl_mechanism: url.username.map_or(Some(SaslMechanism::Anonymous), |_| {
@@ -34,6 +32,7 @@ fn main() {
         idle_timeout: Some(Duration::from_secs(5)),
         buffer_size: Some(1024 * 512),
         tcp_nodelay: None,
+        ..Default::default()
     };
 
     let container = Container::new()
